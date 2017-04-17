@@ -71,6 +71,17 @@ Now, we create it in the main thread.
 3. Others:
 add #include <unistd.h> at where function usleep was called.
 
+## Add support for running KITTI benchmark suit
+1. put KITTI odometry ground truth dataset int the root directory
+2. make sure that KITTI devkit tool <evaluate_odometry> exist.
+3. run <stereo.kitti_eval.sh>
+```
+./stereo_kitti_eval.sh {PATH/TO/KITTI/odometry/datasets} {SEQ NO.}
+for example:
+./stereo_kitti_eval.sh ../KITTI_odometry/ 3
+```
+4. evaluation results will be in folder :results-{SEQ NO.}
+
 ## C++11 or C++0x Compiler
 We use the new thread and chrono functionalities of C++11.
 

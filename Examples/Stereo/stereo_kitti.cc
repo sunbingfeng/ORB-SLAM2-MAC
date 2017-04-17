@@ -29,11 +29,12 @@
 
 #include<System.h>
 #include <unistd.h>
-
+#include <thread>
 using namespace std;
 
 void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
                 vector<string> &vstrImageRight, vector<double> &vTimestamps);
+void FeedImages(ORB_SLAM2::System& SLAM, string imagesPath);
 
 int main(int argc, char **argv)
 {
@@ -43,16 +44,23 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // Create SLAM system. It initializes all system threads and gets ready to process frames.
+    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::STEREO,true);
+    thread *pth_feedImages = new thread(FeedImages, std::ref(SLAM), argv[3]);
+    SLAM.GetViewer()->Run();
+
+    return 0;
+}
+
+void FeedImages(ORB_SLAM2::System& SLAM, string imagesPath)
+{
     // Retrieve paths to images
     vector<string> vstrImageLeft;
     vector<string> vstrImageRight;
     vector<double> vTimestamps;
-    LoadImages(string(argv[3]), vstrImageLeft, vstrImageRight, vTimestamps);
+    LoadImages(string(imagesPath), vstrImageLeft, vstrImageRight, vTimestamps);
 
     const int nImages = vstrImageLeft.size();
-
-    // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::STEREO,true);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
@@ -75,7 +83,7 @@ int main(int argc, char **argv)
         {
             cerr << endl << "Failed to load image at: "
                  << string(vstrImageLeft[ni]) << endl;
-            return 1;
+            // return 1;
         }
 
 #ifdef COMPILEDWITHC11
@@ -108,9 +116,6 @@ int main(int argc, char **argv)
             usleep((T-ttrack)*1e6);
     }
 
-    // Stop all threads
-    SLAM.Shutdown();
-
     // Tracking time statistics
     sort(vTimesTrack.begin(),vTimesTrack.end());
     float totaltime = 0;
@@ -125,9 +130,9 @@ int main(int argc, char **argv)
     // Save camera trajectory
     SLAM.SaveTrajectoryKITTI("CameraTrajectory.txt");
 
-    return 0;
+    // Stop all threads
+    SLAM.Shutdown();
 }
-
 void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
                 vector<string> &vstrImageRight, vector<double> &vTimestamps)
 {
