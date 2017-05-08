@@ -11,7 +11,9 @@ fi
 
 printf -v SEQ "%s/%02d" $1 $2
 
-./Examples/Stereo/stereo_kitti Vocabulary/ORBvoc.txt $YAML_STR $SEQ
+env CPUPROFILE_FREQUENCY=200 ./Examples/Stereo/stereo_kitti Vocabulary/ORBvoc.txt $YAML_STR $SEQ
+
+pprof --pdf --nodecount=100 ./Examples/Stereo/stereo_kitti ORB_SLAM2_TOTAL.prof >> ORB_SLAM2_TOTAL_$2.pdf 
 
 wait
 

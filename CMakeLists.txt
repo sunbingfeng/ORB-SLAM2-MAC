@@ -64,6 +64,7 @@ ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
+/usr/local/Cellar/gperftools/2.5_1/include
 )
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -99,6 +100,7 @@ ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.dylib
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.dylib
+/usr/local/lib/libprofiler.dylib
 )
 
 # Build examples
